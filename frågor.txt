@@ -1,0 +1,186 @@
+Jag siktar på VG
+
+När använder man add respektive commit?
+Man använder add för att flyta sina ändrade filer från working directory till staging "directory".
+Man använder commit för att logga sina ändringar.
+
+Vad är pull repektive push?
+Pull använder man när man vill ta hem filer från det remote repository man är kopplat till.
+Push använder man lägga upp sina filer till det remote repository man är kopplat till.
+
+När använder man log respektive status?
+Man använder log när man vill se vilka commit och ändringar man har gjort tidigare.
+Status använder man när man vill se vilka filer som har ändrats men inte är commitade än eller om man vill se vilken branch man står i.
+
+Hur kan man formulera sig i sina commit-meddelanden?
+Det bästa skulle jag säga är att skriva en kort beskrivning av vad man har gjort t.ex "Fixed a bug where 1+1 didn't add up to 2"
+
+Det finns flera sätt att rulla tillbaka koden till ett tidigare tillstånd. Förklara skillnaden.
+Reset kommer med tre argument, soft, mixed och hard, väljar man ingen av dom så är mixed standard.
+
+Reset soft flyttar ens HEAD till en annan commit, ens working directory och staging area ändras inte. Så det som man hade ändrat ligger alltså i staging area.
+Exemple:
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git log --oneline
+614a4a8 (HEAD -> master) adding då
+6a10068 adding hej
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git status
+On branch master
+nothing to commit, working tree clean
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git reset --soft 6a10068
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git status
+On branch master
+Changes to be committed:
+(use "git restore --staged <file>..." to unstage)
+modified:   reset.txt
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git log --oneline
+6a10068 (HEAD -> master) adding hej
+
+Reset mixed gör samma som reset soft, men nu kommer ens staging area matcha med den som man resetar till.
+rasmus@DESKTOP-LHUO0UU:~/gittest$ cat resetmixed.txt
+Hej
+Då
+Vi
+Ses
+rasmus@DESKTOP-LHUO0UU:~/gittest$ nano resetmixed.txt
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git add .
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git commit -m "adding imorgon"
+[master 2fb859a] adding imorgon
+1 file changed, 2 insertions(+)
+rasmus@DESKTOP-LHUO0UU:~/gittest$ cat resetmixed.txt
+Hej
+Då
+Vi
+Ses
+Imorgon
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git log --oneline
+2fb859a (HEAD -> master) adding imorgon
+13a62d9 adding text
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git reset --mixed 13a62d9
+Unstaged changes after reset:
+M       resetmixed.txt
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git status
+On branch master
+Changes not staged for commit:
+  (use "git add <file>..." to update what will be committed)
+  (use "git restore <file>..." to discard changes in working directory)
+        modified:   resetmixed.txt
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git log --oneline
+13a62d9 (HEAD -> master) adding text
+rasmus@DESKTOP-LHUO0UU:~/gittest$ cat resetmixed.txt
+Hej
+Då
+Vi
+Ses
+Imorgon
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git restore resetmixed.txt
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git status
+On branch master
+nothing to commit, working tree clean
+rasmus@DESKTOP-LHUO0UU:~/gittest$ cat resetmixed.txt
+Hej
+Då
+Vi
+Ses
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git log --oneline
+13a62d9 (HEAD -> master) adding text
+
+Reset hard flyttar ens Head till den commit man väljer, men nu kommer även alla commits försvinna och alla ändringar man gjorde.
+rasmus@DESKTOP-LHUO0UU:~/gittest$ nano resethard.txt
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git add .
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git commit -m "adding hej"
+[master d48b9e2] adding hej
+ 2 files changed, 2 insertions(+), 4 deletions(-)
+ create mode 100644 resethard.txt
+ delete mode 100644 resetmixed.txt
+rasmus@DESKTOP-LHUO0UU:~/gittest$ nano resethard.txt
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git add .
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git commit -m "adding då"
+[master 5d59ffe] adding då
+ 1 file changed, 1 insertion(+)
+rasmus@DESKTOP-LHUO0UU:~/gittest$ nano resethard.txt
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git add .
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git commit -m "adding vi"
+[master e557e83] adding vi
+ 1 file changed, 1 insertion(+)
+rasmus@DESKTOP-LHUO0UU:~/gittest$ nano resethard.txt
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git add .
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git commit -m "adding ses"
+[master ab61d43] adding ses
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git log --oneline
+ab61d43 (HEAD -> master) adding ses
+e557e83 adding vi
+5d59ffe adding då
+d48b9e2 adding hej
+13a62d9 adding text
+fad9c6c deleting reset.txt
+390e3d1 reset to first commit
+6a10068 adding hej
+rasmus@DESKTOP-LHUO0UU:~/gittest$ cat resethard.txt
+Hej
+Då
+Vi
+Ses
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git status
+On branch master
+nothing to commit, working tree clean
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git reset --hard d48b9e2
+HEAD is now at d48b9e2 adding hej
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git status
+On branch master
+nothing to commit, working tree clean
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git log --oneline
+d48b9e2 (HEAD -> master) adding hej
+rasmus@DESKTOP-LHUO0UU:~/gittest$ cat resethard.txt
+Hej
+
+Revert gör i princip samma som reset hard fast istället för att alla commit som låg emellan försvinner så skapar den en ny commit utan dom ändringarna man gjorde.
+rasmus@DESKTOP-LHUO0UU:~/gittest$ nano revert.txt
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git add .
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git commit -m "adding hej"
+[master 1802850] adding hej
+ 1 file changed, 1 insertion(+)
+ create mode 100644 revert.txt
+rasmus@DESKTOP-LHUO0UU:~/gittest$ nano revert.txt
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git add .
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git commit -m "adding då"
+[master 5341145] adding då
+ 1 file changed, 2 insertions(+)
+rasmus@DESKTOP-LHUO0UU:~/gittest$ nano revert.txt
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git add .
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git commit -m "adding vi"
+[master dba93ae] adding vi
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+rasmus@DESKTOP-LHUO0UU:~/gittest$ nano revert.txt
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git add .
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git commit -m "adding ses"
+[master cb642c1] adding ses
+ 1 file changed, 2 insertions(+)
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git status
+On branch master
+nothing to commit, working tree clean
+rasmus@DESKTOP-LHUO0UU:~/gittest$
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git log --oneline
+cb642c1 (HEAD -> master) adding ses
+dba93ae adding vi
+5341145 adding då
+1802850 adding hej
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git revert HEAD
+[master b08a19c] Revert "adding ses"
+ 1 file changed, 2 deletions(-)
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git status
+On branch master
+nothing to commit, working tree clean
+rasmus@DESKTOP-LHUO0UU:~/gittest$ git log --oneline
+b08a19c (HEAD -> master) Revert "adding ses"
+cb642c1 adding ses
+dba93ae adding vi
+5341145 adding då
+1802850 adding hej
+rasmus@DESKTOP-LHUO0UU:~/gittest$ cat revert.txt
+Hej
+Då
+Vi  
+
+Det är oftast rätt att använda git revert när man jobbar i en remote repo då man inte vill råka ta bort något viktigt
+då det som tas bort är borta för alltid och reset när man jobbar i sin private repo
